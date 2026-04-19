@@ -1,20 +1,26 @@
 /**
- * fetchModel - Lấy dữ liệu từ server 
+ * Lấy dữ liệu từ backend API.
+ * @param {string} url 
+ * @returns {Promise} 
  */
 function fetchModel(url) {
-  return new Promise((resolve, reject) => {
-    fetch(url)
+  return new Promise(function (resolve, reject) {
+    const backendUrl = "https://sk5g76-8081.csb.app/api" + url;
+
+    fetch(backendUrl)
       .then((response) => {
         if (!response.ok) {
-          return reject(new Error("Lỗi HTTP: " + response.status));
+          reject(new Error("Lỗi mạng hoặc không tìm thấy dữ liệu"));
         }
         return response.json();
       })
       .then((data) => {
-        // Trả về trực tiếp data để khớp với các component [cite: 79]
-        resolve(data); 
+        resolve(data);
       })
-      .catch((error) => reject(error));
+      .catch((error) => {
+        console.error("Lỗi khi fetch data:", error);
+        reject(error);
+      });
   });
 }
 

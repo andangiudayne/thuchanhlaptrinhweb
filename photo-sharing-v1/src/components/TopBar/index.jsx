@@ -1,29 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import { useLocation } from 'react-router-dom';
-import models from '../../modelData/models';
+import fetchModel from '../../lib/fetchModelData'; 
 
 function TopBar() {
   const location = useLocation();
-  const pathParts = location.pathname.split('/'); // Cắt URL để lấy thông tin
+  const pathParts = location.pathname.split('/'); 
+  const [contextText, setContextText] = useState('');
   
-  let contextText = '';
+  
+  const userId = pathParts[2];
 
-  // Xác định ngữ cảnh dựa trên URL
-  if (pathParts[1] === 'users' && pathParts[2]) {
-    const user = models.userModel(pathParts[2]);
-    if (user) contextText = `${user.first_name} ${user.last_name}`;
-  } else if (pathParts[1] === 'photos' && pathParts[2]) {
-    const user = models.userModel(pathParts[2]);
-    if (user) contextText = `Photos of ${user.first_name} ${user.last_name}`;
-  }
+  useEffect(() => {
+    if (userId) {
+      fetchModel(`/user/${userId}`)
+        .then((user) => {
+          const firstName = user.first_name ?? user.first ?? '';
+          const lastName = user.last_name ?? user.last ?? '';
+
+          if (pathParts[1] === 'users') {
+            setContextText(`${firstName} ${lastName}`);
+          } else if (pathParts[1] === 'photos') {
+            setContextText(`Photos of ${firstName} ${lastName}`);
+          }
+        })
+        .catch(() => setContextText(''));
+    } else {
+      setContextText('');
+    }
+  }, [userId, pathParts]); 
 
   return (
-    <AppBar position="static">
+    <AppBar position="absolute" style={{ zIndex: 1201 }}>
       <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="h6" color="inherit">
-          {/* Nhớ đổi dòng này thành tên thật của bạn nhé! */}
-          Your Name Here 
+          Lê Nguyễn Ngọc An
         </Typography>
         <Typography variant="h6" color="inherit">
           {contextText}

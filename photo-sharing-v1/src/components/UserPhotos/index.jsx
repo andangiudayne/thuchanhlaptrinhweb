@@ -8,13 +8,12 @@ function UserPhotos() {
   const [photos, setPhotos] = useState(null);
 
   useEffect(() => {
-  fetchModel(`http://localhost:3000/photosOfUser/${userId}`)
-    .then((data) => {
-      // Tương tự, set trực tiếp dữ liệu ảnh vào state
-      setPhotos(data); 
-    })
-    .catch((err) => console.error(err));
-}, [userId]);
+    fetchModel(`/photo/photosOfUser/${userId}`)
+      .then((data) => {
+        setPhotos(data); 
+      })
+      .catch((err) => console.error("Error fetching photos:", err));
+  }, [userId]);
 
   if (!photos) return <Typography>Loading photos...</Typography>;
 
@@ -27,6 +26,7 @@ function UserPhotos() {
         <Card key={photo._id} style={{ marginBottom: '30px' }}>
           <CardMedia 
             component="img" 
+           
             image={require(`../../images/${photo.file_name}`)} 
             alt={photo.file_name} 
           />
@@ -42,10 +42,17 @@ function UserPhotos() {
                   <ListItemText
                     primary={
                       <Link to={`/users/${comment.user._id}`} style={{ textDecoration: 'none', color: '#1976d2' }}>
-                        {comment.user.first_name} {comment.user.last_name}
+                        {comment.user.first_name ?? comment.user.first ?? ''} {comment.user.last_name ?? comment.user.last ?? ''}
                       </Link>
                     }
-                    secondary={<>{formatDate(comment.date_time)} - {comment.comment}</>}
+                    secondary={
+                      <React.Fragment>
+                        <Typography component="span" variant="body2" color="textPrimary">
+                          {formatDate(comment.date_time)}
+                        </Typography>
+                        {` — ${comment.comment}`}
+                      </React.Fragment>
+                    }
                   />
                 </ListItem>
               ))}

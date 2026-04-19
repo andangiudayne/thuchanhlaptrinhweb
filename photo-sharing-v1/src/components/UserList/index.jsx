@@ -7,12 +7,13 @@ function UserList() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-  fetchModel('http://localhost:3000/user/list')
-    .then((data) => {
-      setUsers(data); 
-    })
-    .catch((err) => console.error(err));
-}, []);
+
+    fetchModel('/user/list')
+      .then((data) => {
+        setUsers(data); 
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   return (
     <div>
